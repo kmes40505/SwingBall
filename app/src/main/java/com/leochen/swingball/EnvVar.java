@@ -1,25 +1,36 @@
 package com.leochen.swingball;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class EnvVar {
 	private static FreeSpace freeSpaceObj;
 	private static int mainWidth;
 	private static int mainHeight;
 
-	private static double stationSpeedVal = 6.8; //speed: 6.6-8.4, size 50-100 height diff: 120, dis diff:50 (blocksize 200)
-	private static double gravityVal = 0.06;
-	private static double screenFocusSpeedVal = 6;
-	private static double speedDiffVal = 1.8;
-	private static double smallestStationSpeedVal = 4.4;
-	private static double screenScale = 1.0;
-	private static int stationSizeDiffVal = 40;
-	private static int heightDiffVal = 120;
-	private static int disDiffVal = 50;
-	private static int smallestStationSizeVal = 60;
-	private static int blockSizeVal = 200;
-	private static int avgStationHeightVal = 180;
-	private static int playerSizeVal = 20;
+	private static double stationSpeedVal;
+	private static double gravityVal;
+	private static double screenFocusSpeedVal;
+	private static double speedDiffVal;
+	private static double smallestStationSpeedVal;
+	private static double screenScale;
+	private static int stationSizeDiffVal;
+	private static int heightDiffVal;
+	private static int disDiffVal;
+	private static int smallestStationSizeVal;
+	private static int blockSizeVal;
+	private static int avgStationHeightVal;
+	private static int playerSizeVal;
 	private static GameState gameStateVal;
 	private static boolean pressedState;
+	private final static ReentrantLock pauseLock = new ReentrantLock();
+
+	public static void pauseLock() {
+		pauseLock.lock();
+	}
+
+	public static void pauseUnlock() {
+		pauseLock.unlock();
+	}
 
 	private static final int frameIntervalVal = 15;
 
@@ -45,19 +56,20 @@ public class EnvVar {
 
 
 	public static void updateScale() {
-		stationSpeedVal = stationSpeedVal * screenScale;
-		gravityVal = gravityVal * screenScale;
-		screenFocusSpeedVal = screenFocusSpeedVal * screenScale;
-		speedDiffVal = speedDiffVal * screenScale;
-		smallestStationSpeedVal = smallestStationSpeedVal * screenScale;
+		//speed: 6.6-8.4, size 50-100 height diff: 120, dis diff:50 (blocksize 200)
+		stationSpeedVal = 6.8 * screenScale;
+		gravityVal = 0.1 * screenScale;
+		screenFocusSpeedVal = 6 * screenScale;
+		speedDiffVal = 1.8 * screenScale;
+		smallestStationSpeedVal = 4.4 * screenScale;
 
-		stationSizeDiffVal = (int)(stationSizeDiffVal * screenScale);
-		heightDiffVal = (int)(heightDiffVal * screenScale);
-		disDiffVal = (int)(disDiffVal * screenScale);
-		smallestStationSizeVal = (int)(smallestStationSizeVal * screenScale);
-		blockSizeVal = (int)(blockSizeVal * screenScale);
+		stationSizeDiffVal = (int)(40 * screenScale);
+		heightDiffVal = (int)(120 * screenScale);
+		disDiffVal = (int)(50 * screenScale);
+		smallestStationSizeVal = (int)(60 * screenScale);
+		blockSizeVal = (int)(200 * screenScale);
 		avgStationHeightVal = (int)(180 * screenScale) + mainHeight / 4;
-		playerSizeVal = (int)(playerSizeVal * screenScale);
+		playerSizeVal = (int)(20 * screenScale);
 	}
 
 	public static int playerSize() {
@@ -138,11 +150,12 @@ public class EnvVar {
 
 		screenScale = (double)mainWidth / 400; //400 is used for testing
 		updateScale();
+
+		freeSpaceObj = new FreeSpace(gravityVal);
 	}
 
 	//init called in Game.java
 	public static void init() {
-		freeSpaceObj = new FreeSpace(gravityVal);
 		gameStateVal = GameState.restart;
 		pressedState = false;
 

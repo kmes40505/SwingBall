@@ -19,13 +19,14 @@ public class Game extends GLSurfaceView {
 
 		setRenderer(board);
 		setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
 	}
 
 	private void bootstrap() {
 		EnvVar.init();
 	}
 
-    @Override
+/*    @Override
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -33,5 +34,5 @@ public class Game extends GLSurfaceView {
         }
 
         return true;
-    }
+    }*/
 }
