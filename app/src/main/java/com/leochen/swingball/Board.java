@@ -15,6 +15,7 @@ import android.util.Log;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+
 import static java.security.AccessController.getContext;
 
 
@@ -22,7 +23,7 @@ public class Board implements GLSurfaceView.Renderer {
 	private Context context;
 	private Player player;
 	private LinkedList<Station> stationList;
-	private LinkedList<Block> blockList;
+	private LinkedList<Block> groundBlockList;
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
@@ -55,9 +56,16 @@ public class Board implements GLSurfaceView.Renderer {
 	}
 
 	@Override
-	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		GLES20.glClearColor(0, 0, 0, 1);
 		DrawObj.init();
+		gl.glEnable(GL10.GL_BLEND);
+
+		gl.glDisable(GL10.GL_DEPTH_TEST);
+
+		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+
+		gl.glDepthMask(false);
 	}
 
 	public void init() {
@@ -76,7 +84,7 @@ public class Board implements GLSurfaceView.Renderer {
 		totalXOff = 0;
 		totalYOff = EnvVar.getMainHeight() / 2;
 		stationList = new LinkedList<Station>();
-		blockList = new LinkedList<Block>();
+		groundBlockList = new LinkedList<Block>();
 
 		player = new Player(
 			EnvVar.getMainWidth() / 4 + 1,
@@ -92,8 +100,8 @@ public class Board implements GLSurfaceView.Renderer {
 			EnvVar.smallestStationSize()
 		));
 
-		for (int count = 4; count >=0; count--) {
-			blockList.add(new Block(
+		for (int count = 5; count >=0; count--) {
+			groundBlockList.add(new Block(
 				EnvVar.getMainWidth() / 4 - EnvVar.blockSize() * count,
 				totalYOff + EnvVar.avgStationHeight(),
 				EnvVar.blockSize(),
@@ -101,12 +109,12 @@ public class Board implements GLSurfaceView.Renderer {
 			));
 		}
 
-		for (int count = 0; count < 7; count ++)
+		for (int count = 0; count < 5; count ++)
 			addNextSection();
 	}
 
 	private void addNextSection() {
-		int xStart = blockList.getLast().getx() + EnvVar.blockSize();
+		int xStart = groundBlockList.getLast().getx() + EnvVar.blockSize();
 
 		double stationSpeed = EnvVar.stationSpeed();
 		double speedDiff = EnvVar.speedDiff();
@@ -124,7 +132,7 @@ public class Board implements GLSurfaceView.Renderer {
 
 		stationList.add(stationObj);
 
-		blockList.add(new Block(
+		groundBlockList.add(new Block(
 			xStart,
 			totalYOff + EnvVar.avgStationHeight(),
 			EnvVar.blockSize(),
@@ -156,6 +164,9 @@ public class Board implements GLSurfaceView.Renderer {
 				update();
 				break;
 			case pause:
+				//wait for lock to release
+				EnvVar.pauseLock();
+				EnvVar.pauseUnlock();
 				return;
 			case restart:
 				init();
@@ -179,10 +190,11 @@ public class Board implements GLSurfaceView.Renderer {
 		for (Station station : stationList)
 			station.draw(mMVPMatrix);
 
-		for (Block block : blockList)
+		for (Block block : groundBlockList)
 			block.draw(mMVPMatrix);
 
 		player.draw(mMVPMatrix);
+
 	}
 
     public static int loadShader(int type, String shaderCode){
@@ -222,10 +234,11 @@ public class Board implements GLSurfaceView.Renderer {
 		}
 
 		//check if player hit ground
-		for (Block block : blockList) {
+		for (Block block : groundBlockList) {
 			CollisionFunc chkFunc = block.getColliFunc();
 			if (chkFunc.chk(player)) {
 				block.giveAction(player);
+				EnvVar.setGameState(EnvVar.GameState.end);
 				return;
 			}
 		}
@@ -254,11 +267,11 @@ public class Board implements GLSurfaceView.Renderer {
 
 	public void updateComponents() {
 		//remove section if it's 4 blocks back
-		int oldestX = blockList.getFirst().getx();
+		int oldestX = groundBlockList.getFirst().getx();
 		if (oldestX < -7 * EnvVar.blockSize()) {
 			addNextSection();
 			stationList.removeFirst();
-			blockList.removeFirst();
+			groundBlockList.removeFirst();
 		}
 	}
 
@@ -269,7 +282,7 @@ public class Board implements GLSurfaceView.Renderer {
 			Screen.screenLocation(station);
 		}
 
-		for (Block block : blockList) {
+		for (Block block : groundBlockList) {
 			Screen.screenLocation(block);
 		}
 

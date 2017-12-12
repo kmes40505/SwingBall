@@ -173,7 +173,7 @@ public class DrawObj {
 			mPositionHandle,
 			3,
 			GLES20.GL_FLOAT,
-			false,
+			true,
 			//4 bytes per vertex
 			3*4,
 			vertexBuffer);
