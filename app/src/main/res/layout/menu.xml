@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#777777"
+	android:visibility="gone" >
+
+    <TextView
+    	android:id="@+id/bestScore"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:text="bestScore"
+    	android:textColor="@android:color/holo_green_dark"
+    	tools:text="Best Score"
+    	android:gravity="center" />
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/bestScore"
+		android:layout_centerHorizontal="true" >
+		<Button
+			android:id="@+id/newGameButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="New Game" />
+		<Button
+			android:id="@+id/resumeButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/bestScore"
+			android:text="Resume" />
+	</LinearLayout>
+</RelativeLayout>
