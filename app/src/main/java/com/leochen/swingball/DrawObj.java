@@ -66,19 +66,15 @@ public class DrawObj {
 
 	}
 
-	public static void circle(Instance target, float[] mMVPMatrix) {
+	public static void circle(int xInt, int yInt, int radInt, float[] mMVPMatrix, float color[]){
 		int width = EnvVar.getMainWidth();
 		int height = EnvVar.getMainHeight();
-		int radInt = target.getxSize();
-		int xInt = target.getx();
-		int yInt = target.gety();
 		if (yInt + radInt < 0 || yInt - radInt > height || xInt + radInt < 0 || xInt - radInt > width)
 			return;
 
 		float r = (float) radInt / height;
 		float x = (float) (xInt * 2 - width) / height;
 		float y = (float) (yInt * 2 - height) / height;
-		float color[] = { 0.2f, 0.709803922f, 0.898039216f, 0.5f };
 
 		for (int idx = 0; idx < circCoord.length; idx += 2) {
 			drawTriangle(new float[]{
@@ -87,26 +83,10 @@ public class DrawObj {
 				x + r * circCoord[(idx + 2) % circCoord.length], y + r * circCoord[(idx + 3) % circCoord.length], 0
 			}, color, mMVPMatrix);
 		}
-/*		int numVtx = 30;
-		float coords[] = new float[9];
-		double rdis = Math.PI * 2 / numVtx;
-		coords[0] = x + r;
-		coords[1] = y;
-		coords[2] = 0;
-		coords[3] = (float)(x + Math.cos(rdis) * r);
-		coords[4] = (float)(y + Math.sin(rdis) * r);
-		coords[5] = 0;
-		coords[6] = (float)(x + Math.cos(rdis * 2) * r);
-		coords[7] = (float)(y + Math.sin(rdis * 2) * r);
-		coords[8] = 0;
-		drawTriangle(coords, color, mMVPMatrix);
-		for (int count = 3; count < numVtx; count++) {
-			coords[3] = coords[6];
-			coords[4] = coords[7];
-			coords[6] = (float)(x + Math.cos(rdis * count) * r);
-			coords[7] = (float)(y + Math.sin(rdis * count) * r);
-			drawTriangle(coords, color, mMVPMatrix);
-		}*/
+	}
+
+	public static void circle(Instance target, float[] mMVPMatrix, float color[]) {
+		circle(target.getx(), target.gety(), target.getxSize(), mMVPMatrix, color);
 	}
 
 	public static void rectangle(Instance target, float[] mMVPMatrix) {

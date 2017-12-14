@@ -5,18 +5,24 @@ import com.leochen.swingball.units.*;
 public class Station extends Instance implements actionGenerator, Collision {
 	double diameter;
 	private double stationSpeed;
+	private float[] stationColour;
+
 	public double getStationSpeed() {
 		return stationSpeed;
 	}
 
 	public void setStationSpeed(double stationSpeed) {
 		this.stationSpeed = stationSpeed;
+		float colorOff = (float)((stationSpeed - EnvVar.smallestStationSpeed()) / EnvVar.speedDiff() * 0.5);
+		stationColour[0] = 0.5f + colorOff;
+		stationColour[1] = 0.5f - colorOff;
 	}
 
 	public Station(int x, int y, double diameter) {
 		super(x, y, (int)diameter, (int)diameter);
 		this.diameter = diameter;
 		stationSpeed = EnvVar.stationSpeed();
+		stationColour = new float[]{0.5f,0.5f,1.0f,0.4f};
 	}
 
 	public void giveAction(Spirit obj) {
@@ -83,6 +89,6 @@ public class Station extends Instance implements actionGenerator, Collision {
 	}
 
 	public void draw(float[] mMVPMatrix) {
-		DrawObj.circle(this, mMVPMatrix);
+		DrawObj.circle(this, mMVPMatrix, stationColour);
 	}
 }
