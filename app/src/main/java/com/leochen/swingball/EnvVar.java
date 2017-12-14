@@ -31,7 +31,6 @@ public class EnvVar {
 	private static boolean pressedState;
 	private static Activity activity;
 	private final static String bestScoreFileName = "bestScore.txt";
-	private final static Semaphore pauseLock = new Semaphore(0);
 
 	public static int getBestScore() {
 		return bestScore;
@@ -44,24 +43,12 @@ public class EnvVar {
 	    try {
 	    	FileOutputStream fos = activity.openFileOutput(bestScoreFileName,activity.MODE_PRIVATE);
 	        OutputStreamWriter osw = new OutputStreamWriter(fos);
-	        osw.write(score);
+	        osw.write(Integer.toString(score));
 	        osw.close();
 	    }
 	    catch (Exception e) {
 	        System.out.println(e);
 	    }
-	}
-
-	public static void pauseLock() {
-		try {
-			pauseLock.acquire();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-	}
-
-	public static void pauseUnlock() {
-		pauseLock.release();
 	}
 
 	private static final int frameIntervalVal = 15;
@@ -75,7 +62,7 @@ public class EnvVar {
 	}
 
 	public enum GameState {
-		inGame, pause, restart, end
+		inGame, restart, end
 	}
 
 	public static GameState gameState() {

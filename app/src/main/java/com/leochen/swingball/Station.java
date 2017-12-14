@@ -14,15 +14,14 @@ public class Station extends Instance implements actionGenerator, Collision {
 	public void setStationSpeed(double stationSpeed) {
 		this.stationSpeed = stationSpeed;
 		float colorOff = (float)((stationSpeed - EnvVar.smallestStationSpeed()) / EnvVar.speedDiff() * 0.5);
-		stationColour[0] = 0.5f + colorOff;
-		stationColour[1] = 0.5f - colorOff;
+		stationColour = new float[]{0.5f + colorOff, 0.5f - colorOff, 1.0f, 0.4f};
 	}
 
 	public Station(int x, int y, double diameter) {
 		super(x, y, (int)diameter, (int)diameter);
 		this.diameter = diameter;
 		stationSpeed = EnvVar.stationSpeed();
-		stationColour = new float[]{0.5f,0.5f,1.0f,0.4f};
+		setStationSpeed(stationSpeed);
 	}
 
 	public void giveAction(Spirit obj) {

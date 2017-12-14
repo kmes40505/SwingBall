@@ -37,6 +37,10 @@ public class Board implements GLSurfaceView.Renderer {
 
 	private final int frameInterval = EnvVar.frameInterval();
 
+	public static int getScore() {
+		return score;
+	}
+
 	public Board(Activity context) {
 		this.context = context;
 	}
@@ -151,6 +155,7 @@ public class Board implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onDrawFrame(GL10 unused) {
+
 		sleepTime = frameInterval - (System.currentTimeMillis() - oldTime);
 		sleepTime = sleepTime > 0? sleepTime : 0;
 		try {
@@ -165,10 +170,6 @@ public class Board implements GLSurfaceView.Renderer {
 			case inGame:
 				update();
 				break;
-			case pause:
-				//wait for lock to release
-				EnvVar.pauseLock();
-				return;
 			case restart:
 				init();
 				EnvVar.setGameState(EnvVar.GameState.inGame);
@@ -176,7 +177,7 @@ public class Board implements GLSurfaceView.Renderer {
 			case end:
 				EnvVar.setBestScore(score);
 				UIComponent.startLayout();
-				EnvVar.setGameState(EnvVar.GameState.pause);
+				SwingBall.pauseGame();
 				return;
 		}
 

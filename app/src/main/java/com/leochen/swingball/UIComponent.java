@@ -86,7 +86,7 @@ public class UIComponent {
         		menuButton.setEnabled(false);
         		UIComponent.updateBestScore(EnvVar.getBestScore());
         		menu.setVisibility(View.VISIBLE);
-        		EnvVar.setGameState(EnvVar.GameState.pause);
+                SwingBall.pauseGame();
         	}
         });
 
@@ -96,7 +96,7 @@ public class UIComponent {
         		menu.setVisibility(View.GONE);
         		resumeButton.setVisibility(View.VISIBLE);
         		EnvVar.setGameState(EnvVar.GameState.restart);
-        		EnvVar.pauseUnlock();
+                SwingBall.resumeGame();
         	}
         });
 
@@ -105,14 +105,14 @@ public class UIComponent {
         		menuButton.setEnabled(true);
         		menu.setVisibility(View.GONE);
         		EnvVar.setGameState(EnvVar.GameState.inGame);
-        		EnvVar.pauseUnlock();
+                SwingBall.resumeGame();
         	}
         });
 
         score = (TextView)activity.findViewById(R.id.Score);
         bestScore = (TextView)activity.findViewById(R.id.bestScore);
 
-        UIComponent.updateScore(0);
+        UIComponent.updateScore(Board.getScore());
         UIComponent.updateBestScore(EnvVar.getBestScore());
 	}
 }
