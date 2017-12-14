@@ -55,10 +55,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4">
-                <View
-                    android:id="@+id/menuPlaceHolder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
                 <include
                     layout="@layout/menu"
                     android:layout_width="match_parent"

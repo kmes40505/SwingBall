@@ -10,19 +10,50 @@ import android.widget.TextView;
 import android.widget.RelativeLayout;
 
 public class UIComponent {
-	private static TextView score;
-	private static TextView bestScore;
-
 	private static RelativeLayout menu;
-    private static View menuPlaceHolder;
 
     private static Button menuButton;
     private static Button newGameButton;
     private static Button resumeButton;
+    private static Activity activity;
+    private static TextView score;
+    private static TextView bestScore;
 
 
+    public static void updateScore(final long num) {
+    	activity.runOnUiThread(new Runnable(){
+    		@Override
+    		public void run() {
+    			if (score != null)
+	    			score.setText("Score: " + num);
+    		}
+    	});
+    }
+
+    public static void updateBestScore(final long num) {
+    	activity.runOnUiThread(new Runnable(){
+    		@Override
+    		public void run() {
+    			if (bestScore != null)
+	    			bestScore.setText("Best Score: " + num);
+    		}
+    	});
+    }
+
+    public static void startLayout() {
+		Runnable action = new Runnable() {
+    		@Override
+    		public void run() {
+    			resumeButton.setVisibility(View.GONE);
+        		menuButton.performClick();
+    		}
+    	};
+
+    	activity.runOnUiThread(action);
+    }
 
 	public static void init(Activity activity) {
+		UIComponent.activity = activity;
         FrameLayout componentsFrame = (FrameLayout) activity.findViewById(R.id.UIFragment);
         LayoutInflater.from(activity).inflate(
         	R.layout.ui_components,
@@ -46,7 +77,6 @@ public class UIComponent {
         });
 
         menu = (RelativeLayout) activity.findViewById(R.id.menu);
-        menuPlaceHolder = (View) activity.findViewById(R.id.menuPlaceHolder);
 
         menuButton = (Button)activity.findViewById(R.id.menuButton);
         newGameButton = (Button)activity.findViewById(R.id.newGameButton);
@@ -54,8 +84,7 @@ public class UIComponent {
         menuButton.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View w) {
         		menuButton.setEnabled(false);
-        		EnvVar.pauseLock();
-        		menuPlaceHolder.setVisibility(View.GONE);
+        		UIComponent.updateBestScore(EnvVar.getBestScore());
         		menu.setVisibility(View.VISIBLE);
         		EnvVar.setGameState(EnvVar.GameState.pause);
         	}
@@ -65,7 +94,6 @@ public class UIComponent {
         	public void onClick(View w) {
         		menuButton.setEnabled(true);
         		menu.setVisibility(View.GONE);
-        		menuPlaceHolder.setVisibility(View.VISIBLE);
         		resumeButton.setVisibility(View.VISIBLE);
         		EnvVar.setGameState(EnvVar.GameState.restart);
         		EnvVar.pauseUnlock();
@@ -76,7 +104,6 @@ public class UIComponent {
         	public void onClick(View w) {
         		menuButton.setEnabled(true);
         		menu.setVisibility(View.GONE);
-        		menuPlaceHolder.setVisibility(View.VISIBLE);
         		EnvVar.setGameState(EnvVar.GameState.inGame);
         		EnvVar.pauseUnlock();
         	}
@@ -84,6 +111,8 @@ public class UIComponent {
 
         score = (TextView)activity.findViewById(R.id.Score);
         bestScore = (TextView)activity.findViewById(R.id.bestScore);
+
+        UIComponent.updateScore(0);
+        UIComponent.updateBestScore(EnvVar.getBestScore());
 	}
 }
-

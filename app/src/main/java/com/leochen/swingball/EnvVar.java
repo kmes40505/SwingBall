@@ -1,6 +1,12 @@
 package com.leochen.swingball;
 
-import java.util.concurrent.locks.ReentrantLock;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.concurrent.Semaphore;
+import android.app.Activity;
 
 public class EnvVar {
 	private static FreeSpace freeSpaceObj;
@@ -20,16 +26,42 @@ public class EnvVar {
 	private static int blockSizeVal;
 	private static int avgStationHeightVal;
 	private static int playerSizeVal;
+	private static int bestScore;
 	private static GameState gameStateVal;
 	private static boolean pressedState;
-	private final static ReentrantLock pauseLock = new ReentrantLock();
+	private static Activity activity;
+	private final static String bestScoreFileName = "bestScore.txt";
+	private final static Semaphore pauseLock = new Semaphore(0);
+
+	public static int getBestScore() {
+		return bestScore;
+	}
+
+	public static void setBestScore(int score) {
+		if (score <= bestScore)
+			return;
+		bestScore = score;
+	    try {
+	    	FileOutputStream fos = activity.openFileOutput(bestScoreFileName,activity.MODE_PRIVATE);
+	        OutputStreamWriter osw = new OutputStreamWriter(fos);
+	        osw.write(score);
+	        osw.close();
+	    }
+	    catch (Exception e) {
+	        System.out.println(e);
+	    }
+	}
 
 	public static void pauseLock() {
-		pauseLock.lock();
+		try {
+			pauseLock.acquire();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 
 	public static void pauseUnlock() {
-		pauseLock.unlock();
+		pauseLock.release();
 	}
 
 	private static final int frameIntervalVal = 15;
@@ -155,9 +187,27 @@ public class EnvVar {
 	}
 
 	//init called in Game.java
-	public static void init() {
-		gameStateVal = GameState.restart;
+	public static void init(Activity activity) {
+		EnvVar.activity = activity;
+
+		gameStateVal = GameState.end;
 		pressedState = false;
+
+	    try {
+	        InputStream is = activity.openFileInput(bestScoreFileName);
+
+	        if ( is != null ) {
+	            InputStreamReader isr = new InputStreamReader(is);
+	            BufferedReader br = new BufferedReader(isr);
+	            bestScore = Integer.parseInt(br.readLine());
+	            is.close();
+	        } else {
+	        	bestScore = 0;
+	        }
+	    }
+	    catch (Exception e) {
+	        System.out.println(e);
+	    }
 
 		//width and hight are adjusted later in Board.java
 		updateHW(700, 400);

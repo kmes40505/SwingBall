@@ -8,6 +8,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.app.Activity;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -20,7 +21,7 @@ import static java.security.AccessController.getContext;
 
 
 public class Board implements GLSurfaceView.Renderer {
-	private Context context;
+	private Activity context;
 	private Player player;
 	private LinkedList<Station> stationList;
 	private LinkedList<Block> groundBlockList;
@@ -32,10 +33,11 @@ public class Board implements GLSurfaceView.Renderer {
 
 	private static long oldTime = 0;
 	private static long sleepTime = 0;
+	private static int score = 0;
 
 	private final int frameInterval = EnvVar.frameInterval();
 
-	public Board(Context context) {
+	public Board(Activity context) {
 		this.context = context;
 	}
 
@@ -166,13 +168,15 @@ public class Board implements GLSurfaceView.Renderer {
 			case pause:
 				//wait for lock to release
 				EnvVar.pauseLock();
-				EnvVar.pauseUnlock();
 				return;
 			case restart:
 				init();
 				EnvVar.setGameState(EnvVar.GameState.inGame);
 				return;
 			case end:
+				EnvVar.setBestScore(score);
+				UIComponent.startLayout();
+				EnvVar.setGameState(EnvVar.GameState.pause);
 				return;
 		}
 
@@ -273,6 +277,7 @@ public class Board implements GLSurfaceView.Renderer {
 			stationList.removeFirst();
 			groundBlockList.removeFirst();
 		}
+
 	}
 
 	public void updateScreen() {
@@ -299,6 +304,14 @@ public class Board implements GLSurfaceView.Renderer {
 
 		//update sections
 		updateComponents();
+
+		//update player score
+		int newScore = (int)((totalXOff + player.getx()) / EnvVar.blockSize());
+		if (newScore != score) {
+			score = newScore;
+			UIComponent.updateScore(score);
+		}
+
 	}
 
 }

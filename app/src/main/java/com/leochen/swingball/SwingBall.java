@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.opengl.GLSurfaceView;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+import android.app.Activity;
 
 public class SwingBall extends AppCompatActivity {
 
@@ -13,6 +14,8 @@ public class SwingBall extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        bootstrap(this);
 
         mGLView = new Game(this);
         //setContentView(mGLView);
@@ -34,5 +37,9 @@ public class SwingBall extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mGLView.onResume();
+    }
+
+    private void bootstrap(Activity activity) {
+        EnvVar.init(activity);
     }
 }
