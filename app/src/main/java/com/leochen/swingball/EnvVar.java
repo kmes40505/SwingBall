@@ -75,8 +75,8 @@ public class EnvVar {
 
 
 	public static void updateScale() {
-		//speed: 6.6-8.4, size 50-100 height diff: 120, dis diff:50 (blocksize 200)
-		stationSpeedVal = 6.8 * screenScale;
+		//speed: 4.4-6.2, size 50-100 height diff: 120, dis diff:50 (blocksize 200)
+		stationSpeedVal = 5.3 * screenScale;
 		gravityVal = 0.1 * screenScale;
 		screenFocusSpeedVal = 6 * screenScale;
 		speedDiffVal = 1.8 * screenScale;
